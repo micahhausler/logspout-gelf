@@ -48,12 +48,13 @@ func (a *GelfAdapter) Stream(logstream chan *router.Message) {
 
 		msg := GelfMessage{
 			Version:        "1.1",
-			Host:           hostname,
+			//Host:           hostname,
+			Host:           m.Container.Name,
 			ShortMessage:   m.Data,
 			Timestamp:      float64(m.Time.UnixNano()) / float64(time.Second),
 			ContainerId:    m.Container.ID,
 			ContainerImage: m.Container.Config.Image,
-			//ContainerName:  m.Container.Name,
+			ContainerName:  m.Container.Name,
 		}
 		js, err := json.Marshal(msg)
 		if err != nil {
@@ -70,7 +71,7 @@ func (a *GelfAdapter) Stream(logstream chan *router.Message) {
 
 type GelfMessage struct {
 	Version      string  `json:"version"`
-	Host         string  `json:"container_name,omitempty"`
+	Host         string  `json:"host"`
 	ShortMessage string  `json:"short_message"`
 	FullMessage  string  `json:"full_message,omitempty"`
 	Timestamp    float64 `json:"timestamp,omitempty"`
@@ -78,4 +79,5 @@ type GelfMessage struct {
 
 	ContainerId    string `json:"container_id,omitempty"`
 	ContainerImage string `json:"docker_image,omitempty"`
+  ContainerName  string `json:"container_name,omitempty"`
 }

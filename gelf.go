@@ -78,5 +78,5 @@ type GelfMessage struct {
 
 	ContainerId    string `json:"docker_container,omitempty"`
 	ContainerImage string `json:"docker_image,omitempty"`
-	ContainerName  string `json:"docker_name,omitempty"`
+  ContainerName  string `json:"container_name,omitempty"`
 }

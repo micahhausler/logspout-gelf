@@ -70,13 +70,12 @@ func (a *GelfAdapter) Stream(logstream chan *router.Message) {
 
 type GelfMessage struct {
 	Version      string  `json:"version"`
-	Host         string  `json:"container_name"`
+	Host         string  `json:"container_name,omitempty"`
 	ShortMessage string  `json:"short_message"`
 	FullMessage  string  `json:"full_message,omitempty"`
 	Timestamp    float64 `json:"timestamp,omitempty"`
 	Level        int     `json:"level,omitempty"`
 
-	ContainerId    string `json:"host,omitempty"`
+	ContainerId    string `json:"container_id,omitempty"`
 	ContainerImage string `json:"docker_image,omitempty"`
-	ContainerName  string `json:"container_name,omitempty"`
 }

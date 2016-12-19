@@ -77,7 +77,7 @@ type GelfMessage struct {
 	Timestamp    float64 `json:"timestamp,omitempty"`
 	Level        int     `json:"level,omitempty"`
 
-	ContainerId    string `json:"container_id,omitempty"`
+	ContainerId    string `json:"docker_container,omitempty"`
 	ContainerImage string `json:"docker_image,omitempty"`
   ContainerName  string `json:"container_name,omitempty"`
 }

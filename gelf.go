@@ -3,12 +3,12 @@ package gelf
 import (
 	"encoding/json"
 	"errors"
-	"log"
-	"os"
-	"time"
-
 	"github.com/Graylog2/go-gelf/gelf"
 	"github.com/gliderlabs/logspout/router"
+	"log"
+	"os"
+	"strings"
+	"time"
 )
 
 var hostname string
@@ -82,15 +82,21 @@ type GelfMessage struct {
 }
 
 func (m GelfMessage) getExtraFields() (json.RawMessage, error) {
+
 	extra := map[string]interface{}{
 		"_container_id":   m.Container.ID,
-		"_container_name": m.Container.Name,
-		"_image_id":       m.Container.Config.Image,
-		"_image_name":     m.Container.Image,
-		"_node":           m.Container.Node,
+		"_container_name": strings.TrimLeft(m.Container.Name, "/"),
+		"_image_id":       m.Container.Image,
+		"_image_name":     m.Container.Config.Image,
 		// "_tag":            tag,
 		"_created": m.Container.Created,
 	}
+
+	swarmnode := m.Container.Node
+	if swarmnode != nil {
+		extra["_swarm_node"] = swarmnode.Name
+	}
+
 	rawExtra, err := json.Marshal(extra)
 	if err != nil {
 		return nil, err

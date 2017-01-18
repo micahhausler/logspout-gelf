@@ -88,6 +88,7 @@ func (m GelfMessage) getExtraFields() (json.RawMessage, error) {
 		"_container_name": strings.TrimLeft(m.Container.Name, "/"),
 		"_image_id":       m.Container.Image,
 		"_image_name":     m.Container.Config.Image,
+		"_command":        strings.Join(m.Container.Config.Cmd[:], " "),
 		// "_tag":            tag,
 		"_created": m.Container.Created,
 	}

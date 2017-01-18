@@ -25,11 +25,22 @@ The following docker container attributes are mapped to the corresponding GELF e
 
 ```
 {
-	"_docker.container": <container-id>,
-	"_docker.image": <container-image>,
-	"_docker.name": <container-name>
+        "_container_id":   <container-id>,
+        "_container_name": <container-name>,
+        "_image_id":       <container-image-sha>,
+        "_image_name":     <container-image-name>,
+        "_command":        <container-cmd>,
+        "_created":        <container-created-date>,
+        "_swarm_node":     <host-if-running-on-swarm>
 }
 ```
+
+You can also add extra custom fields by adding labels to the containers.
+
+for example 
+a container with label ```gelf_service=servicename``` will have the extra field service
+
+
 
 ## License
 MIT. See [License](LICENSE)

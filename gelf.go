@@ -56,6 +56,7 @@ func (a *GelfAdapter) Stream(logstream chan *router.Message) {
 			ContainerName:  m.Container.Name,
 		}
 		js, err := json.Marshal(msg)
+		log.Println("Message:", js)
 		if err != nil {
 			log.Println("Graylog:", err)
 			continue

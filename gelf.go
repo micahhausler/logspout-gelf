@@ -3,12 +3,13 @@ package gelf
 import (
 	"encoding/json"
 	"errors"
-	"github.com/Graylog2/go-gelf/gelf"
-	"github.com/gliderlabs/logspout/router"
 	"log"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/Graylog2/go-gelf/gelf"
+	"github.com/gliderlabs/logspout/router"
 )
 
 var hostname string
@@ -92,7 +93,7 @@ func (m GelfMessage) getExtraFields() (json.RawMessage, error) {
 		"_created":        m.Container.Created,
 	}
 	for name, label := range m.Container.Config.Labels {
-		if strings.ToLower(name[0:5]) == "gelf_" {
+		if len(name) > 5 && strings.ToLower(name[0:5]) == "gelf_" {
 			extra[name[4:]] = label
 		}
 	}

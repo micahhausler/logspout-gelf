@@ -3,12 +3,13 @@ package gelf
 import (
 	"encoding/json"
 	"errors"
-	"github.com/Graylog2/go-gelf/gelf"
-	"github.com/gliderlabs/logspout/router"
 	"log"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/Graylog2/go-gelf/gelf"
+	"github.com/gliderlabs/logspout/router"
 )
 
 var hostname string
@@ -26,7 +27,7 @@ type GelfAdapter struct {
 
 // NewGelfAdapter creates a GelfAdapter with UDP as the default transport.
 func NewGelfAdapter(route *router.Route) (router.LogAdapter, error) {
-	_, found := router.AdapterTransports.Lookup(route.AdapterTransport("udp"))
+	_, found := router.AdapterTransports.Lookup(route.AdapterTransport("tcp"))
 	if !found {
 		return nil, errors.New("unable to find adapter: " + route.Adapter)
 	}

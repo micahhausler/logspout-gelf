@@ -34,7 +34,7 @@ func NewGelfAdapter(route *router.Route) (router.LogAdapter, error) {
 
 	gelfWriter, err := gelf.NewWriter(route.Address)
 
-	log.Info(route)
+	log.Println(route)
 
 	if err != nil {
 		return nil, err

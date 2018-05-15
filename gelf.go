@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Graylog2/go-gelf/gelf"
 	"github.com/gliderlabs/logspout/router"
+	"gopkg.in/Graylog2/go-gelf.v2/gelf"
 )
 
 var hostname string
@@ -32,7 +32,8 @@ func NewGelfAdapter(route *router.Route) (router.LogAdapter, error) {
 		return nil, errors.New("unable to find adapter: " + route.Adapter)
 	}
 
-	gelfWriter, err := gelf.NewWriter(route.Address)
+	// Will add checks here to identify what protocol is specified in adapter before using it //
+	gelfWriter, err := gelf.NewTCPWriter(route.Address)
 
 	log.Println(route)
 

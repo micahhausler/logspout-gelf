@@ -21,7 +21,7 @@ func init() {
 
 // GelfAdapter is an adapter that streams UDP JSON to Graylog
 type GelfAdapter struct {
-	writer      *gelf.GelfWriter
+	//	writer      *gelf.GelfWriter
 	route       *router.Route
 	adapterType string
 }
@@ -30,8 +30,9 @@ type GelfAdapter struct {
 func NewGelfAdapter(route *router.Route) (router.LogAdapter, error) {
 
 	// Identify adatper type to use later for building the write //
-	routeAdapterType := route.AdapterType
+	routeAdapterType := route.AdapterType()
 	_, found := router.AdapterTransports.Lookup(route.AdapterTransport(routeAdapterType))
+
 	if !found {
 		return nil, errors.New("unable to find adapter: " + route.Adapter)
 	}
@@ -41,13 +42,9 @@ func NewGelfAdapter(route *router.Route) (router.LogAdapter, error) {
 
 	log.Println(route)
 
-	if err != nil {
-		return nil, err
-	}
-
 	return &GelfAdapter{
-		route:       route,
-		writer:      gelfWriter,
+		route: route,
+		//	writer:      gelfWriter,
 		adapterType: routeAdapterType,
 	}, nil
 }
@@ -87,13 +84,13 @@ func (a *GelfAdapter) Stream(logstream chan *router.Message) {
 		if a.adapterType == "tcp" {
 			// Create and Stream using TCP Writer
 			newWriter, err := gelf.NewTCPWriter(route.Address)
-			newWriter.GelfWriter = a.Writer
+			//newWriter.GelfWriter = a.Writer
 			checkError(err)
 			sendMessage(newWriter, &msg)
 		} else if a.adapterType == "udp" {
 			// Create and Stream using the UDP Writer
 			newWriter, err := gelf.NewUDPWriter(route.Address)
-			newWriter.GelfWriter = a.Writer
+			//newWriter.GelfWriter = a.Writer
 			checkError(err)
 			sendMessage(newWriter, &msg)
 		} else {

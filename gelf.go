@@ -83,20 +83,19 @@ func (a *GelfAdapter) Stream(logstream chan *router.Message) {
 
 		if a.adapterType == "tcp" {
 			// Create and Stream using TCP Writer
-			newWriter, err := gelf.NewTCPWriter(route.Address)
+			newWriter, err := gelf.NewTCPWriter(a.route.Address)
 			//newWriter.GelfWriter = a.Writer
 			checkError(err)
 			sendMessage(newWriter, &msg)
 		} else if a.adapterType == "udp" {
 			// Create and Stream using the UDP Writer
-			newWriter, err := gelf.NewUDPWriter(route.Address)
+			newWriter, err := gelf.NewUDPWriter(a.route.Address)
 			//newWriter.GelfWriter = a.Writer
 			checkError(err)
 			sendMessage(newWriter, &msg)
 		} else {
 			// TLS is not supported so ignore message
 			log.Println("Gelf Adapter: tls is not yet support")
-			continue
 		}
 
 		/*if err := a.writer.WriteMessage(&msg); err != nil {
@@ -114,12 +113,10 @@ func checkError(err error) {
 }
 
 // Wrapper implementing the interface //
-func sendMessage(w gelf.Writer, m *message) error {
+func sendMessage(w gelf.Writer, m *gelf.Message) {
 	if err := w.WriteMessage(m); err != nil {
 		log.Println("Graylog:", err)
-		continue
 	}
-
 }
 
 // GelfMessage stores the router Message //

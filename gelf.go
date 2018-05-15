@@ -21,19 +21,23 @@ func init() {
 
 // GelfAdapter is an adapter that streams UDP JSON to Graylog
 type GelfAdapter struct {
-	writer *gelf.Writer
-	route  *router.Route
+	writer      *gelf.GelfWriter
+	route       *router.Route
+	adapterType string
 }
 
 // NewGelfAdapter creates a GelfAdapter with UDP as the default transport.
 func NewGelfAdapter(route *router.Route) (router.LogAdapter, error) {
-	_, found := router.AdapterTransports.Lookup(route.AdapterTransport("udp"))
+
+	// Identify adatper type to use later for building the write //
+	routeAdapterType := route.AdapterType
+	_, found := router.AdapterTransports.Lookup(route.AdapterTransport(routeAdapterType))
 	if !found {
 		return nil, errors.New("unable to find adapter: " + route.Adapter)
 	}
 
 	// Will add checks here to identify what protocol is specified in adapter before using it //
-	gelfWriter, err := gelf.NewTCPWriter(route.Address)
+	//gelfWriter, err := gelf.NewTCPWriter(route.Address)
 
 	log.Println(route)
 
@@ -42,8 +46,9 @@ func NewGelfAdapter(route *router.Route) (router.LogAdapter, error) {
 	}
 
 	return &GelfAdapter{
-		route:  route,
-		writer: gelfWriter,
+		route:       route,
+		writer:      gelfWriter,
+		adapterType: routeAdapterType,
 	}, nil
 }
 
@@ -75,13 +80,52 @@ func (a *GelfAdapter) Stream(logstream chan *router.Message) {
 		// }
 
 		// here be message write.
-		if err := a.writer.WriteMessage(&msg); err != nil {
-			log.Println("Graylog:", err)
+
+		// Extra logic to identify what adapterType we have selected before writing
+		// the message to graylog
+
+		if a.adapterType == "tcp" {
+			// Create and Stream using TCP Writer
+			newWriter, err := gelf.NewTCPWriter(route.Address)
+			newWriter.GelfWriter = a.Writer
+			checkError(err)
+			sendMessage(newWriter, &msg)
+		} else if a.adapterType == "udp" {
+			// Create and Stream using the UDP Writer
+			newWriter, err := gelf.NewUDPWriter(route.Address)
+			newWriter.GelfWriter = a.Writer
+			checkError(err)
+			sendMessage(newWriter, &msg)
+		} else {
+			// TLS is not supported so ignore message
+			log.Println("Gelf Adapter: tls is not yet support")
 			continue
 		}
+
+		/*if err := a.writer.WriteMessage(&msg); err != nil {
+			log.Println("Graylog:", err)
+			continue
+		}*/
 	}
 }
 
+func checkError(err error) {
+	if err != nil {
+		log.Println("Graylog:", err)
+		continue
+	}
+}
+
+// Wrapper implementing the interface //
+func sendMessage(w gelf.Writer, m *message) error {
+	if err := w.WriteMessage(m); err != nil {
+		log.Println("Graylog:", err)
+		continue
+	}
+
+}
+
+// GelfMessage stores the router Message //
 type GelfMessage struct {
 	*router.Message
 }

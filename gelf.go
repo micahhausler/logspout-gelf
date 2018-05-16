@@ -37,11 +37,6 @@ func NewGelfAdapter(route *router.Route) (router.LogAdapter, error) {
 		return nil, errors.New("unable to find adapter: " + route.Adapter)
 	}
 
-	// Will add checks here to identify what protocol is specified in adapter before using it //
-	//gelfWriter, err := gelf.NewTCPWriter(route.Address)
-
-	log.Println(route)
-
 	return &GelfAdapter{
 		route: route,
 		//	writer:      gelfWriter,
@@ -68,7 +63,7 @@ func (a *GelfAdapter) Stream(logstream chan *router.Message) {
 			Host:     hostname,
 			Short:    m.Message.Data,
 			TimeUnix: float64(m.Message.Time.UnixNano()/int64(time.Millisecond)) / 1000.0,
-			Level:    level,
+			Level:    int32(level),
 			RawExtra: extra,
 		}
 		// 	ContainerId:    m.Container.ID,
@@ -97,18 +92,12 @@ func (a *GelfAdapter) Stream(logstream chan *router.Message) {
 			// TLS is not supported so ignore message
 			log.Println("Gelf Adapter: tls is not yet support")
 		}
-
-		/*if err := a.writer.WriteMessage(&msg); err != nil {
-			log.Println("Graylog:", err)
-			continue
-		}*/
 	}
 }
 
 func checkError(err error) {
 	if err != nil {
 		log.Println("Graylog:", err)
-		continue
 	}
 }
 

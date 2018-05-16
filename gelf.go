@@ -30,7 +30,7 @@ type GelfAdapter struct {
 func NewGelfAdapter(route *router.Route) (router.LogAdapter, error) {
 
 	// Identify adatper type to use later for building the write //
-	routeAdapterType := route.AdapterType()
+	routeAdapterType := route.AdapterTransport("udp")
 	_, found := router.AdapterTransports.Lookup(route.AdapterTransport(routeAdapterType))
 
 	if !found {
@@ -90,7 +90,7 @@ func (a *GelfAdapter) Stream(logstream chan *router.Message) {
 			sendMessage(newWriter, &msg)
 		} else {
 			// TLS is not supported so ignore message
-			log.Println("Gelf Adapter: tls is not yet support")
+			log.Printf("Gelf Adapter: %s is not yet support", a.adapterType)
 		}
 	}
 }
